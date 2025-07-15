@@ -1,33 +1,31 @@
-import { Form, Radio, Select, Switch, Button } from 'antd';
+import { Form, Radio, Switch, Button } from 'antd';
+import { useState } from 'react';
 
 interface FormSettingProps {
-  unit: 'metric' | 'imperial';
-  setUnit: (unit: 'metric' | 'imperial') => void;
-  language: string;
-  setLanguage: (lang: string) => void;
-  darkMode: boolean;
-  setDarkMode: (dark: boolean) => void;
+  closeDrawer: () => void;
 }
-
-const FormSetting: React.FC<FormSettingProps> = ({ unit, setUnit, language, setLanguage, darkMode, setDarkMode }) => (
-  <Form layout="vertical">
-    <Form.Item label="Chọn đơn vị nhiệt độ">
-      <Radio.Group value={unit} onChange={(e) => setUnit(e.target.value)}>
-        <Radio value="metric">°C</Radio>
-        <Radio value="imperial">°F</Radio>
-      </Radio.Group>
-    </Form.Item>
-    <Form.Item label="Ngôn ngữ">
-      <Select value={language} onChange={setLanguage}>
-        <Select.Option value="vi">Vietnamese</Select.Option>
-        <Select.Option value="en">English</Select.Option>
-      </Select>
-    </Form.Item>
-    <Form.Item label="Giao diện tối">
-      <Switch checked={darkMode} onChange={setDarkMode} />
-    </Form.Item>
-    <Button type="primary">Lưu</Button>
-  </Form>
-);
+const FormSetting: React.FC<FormSettingProps> = ({closeDrawer}) => {
+  const [unit, setUnit] = useState<string>(localStorage.getItem('unit')??'metric');
+  const [darkMode, setDarkMode] = useState<boolean>(JSON.parse(localStorage.getItem('darkMode') ?? 'false'));
+  const handleSave = () => {
+    localStorage.setItem('unit', unit);
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+    closeDrawer();
+  }
+  return (
+    <Form layout="vertical">
+      <Form.Item label="Chọn đơn vị nhiệt độ">
+        <Radio.Group value={unit} onChange={(e) => setUnit(e.target.value)}>
+          <Radio value="metric">°C</Radio>
+          <Radio value="imperial">°F</Radio>
+        </Radio.Group>
+      </Form.Item>
+      <Form.Item label="Giao diện tối">
+        <Switch checked={darkMode} onChange={setDarkMode} />
+      </Form.Item>
+      <Button type="primary" onClick={handleSave}>Lưu</Button>
+    </Form>
+  )
+};
 
 export default FormSetting;

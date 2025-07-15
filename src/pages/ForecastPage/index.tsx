@@ -39,13 +39,11 @@ import {
 } from 'recharts';
 import type { ForecastItem } from '../../types/forecast';
 import CardForecast from '../../components/CardForecast';
+import { useSearchParams } from 'react-router-dom';
+import useFetchWeatherForecast from '../../hooks/useFetchWeatherForecast';
 
 const { TabPane } = Tabs;
 const { Sider, Content } = Layout;
-
-const API_KEY = import.meta.env.VITE_OPEN_WEATHER_API_KEY;
-const UNIT = 'metric';
-const LANG = 'vi';
 
 const ForecastPage: React.FC = () => {
   const [data, setData] = useState<ForecastItem[]>([]);
@@ -53,7 +51,10 @@ const ForecastPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [city, setCity] = useState<string>('Hà Nội');
   const [forecastMode, setForecastMode] = useState<'today' | '5days'>('today');
-  const [locationName, setLocationName] = useState<string>(''); // tên từ API
+  const [locationName, setLocationName] = useState<string>('');
+  const [, setSearchParams] = useSearchParams("");
+  const fetchForecast = useFetchWeatherForecast();
+  const unit = localStorage.getItem('unit')??'metric';
 
   const processData = (rawList: any[]): ForecastItem[] => {
     return rawList.map((item: any) => ({
@@ -78,15 +79,14 @@ const ForecastPage: React.FC = () => {
   const fetchByCity = async (cityName: string) => {
     setLoading(true);
     try {
-      const res = await axios.get(
-        `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(
-          cityName
-        )}&appid=${API_KEY}&units=${UNIT}&lang=${LANG}`
-      );
-      const all = processData(res.data.list);
+      const res = await fetchForecast.fetchData(`q=${encodeURIComponent(
+        cityName
+      )}`)
+      const all = processData(res.list);
       setFullData(all);
       setData(applyFilter(all));
-      setLocationName(res.data.city.name || res.data.name);
+      setLocationName(res.city.name || res.name);
+      message.success("Lấy dữ liệu thành công")
     } catch (err) {
       message.error('Không thể lấy dữ liệu dự báo cho thành phố đã nhập.');
     } finally {
@@ -105,13 +105,12 @@ const ForecastPage: React.FC = () => {
       async (position) => {
         const { latitude, longitude } = position.coords;
         try {
-          const res = await axios.get(
-            `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${API_KEY}&units=${UNIT}&lang=${LANG}`
-          );
-          const all = processData(res.data.list);
+          const res = await fetchForecast.fetchData(`lat=${latitude}&lon=${longitude}`)
+          const all = processData(res.list);
           setFullData(all);
           setData(applyFilter(all));
-          setLocationName(res.data.city.name || res.data.name);
+          setLocationName(res.city.name || res.name);
+          message.success("Lấy dữ liệu thành công")
         } catch (err) {
           message.error('Không thể lấy dữ liệu thời tiết từ vị trí.');
         } finally {
@@ -189,7 +188,7 @@ const ForecastPage: React.FC = () => {
           const midday = items.find(i => i.time.includes('12:00')) || items[0];
           return (
             <Col span={12} key={date}>
-              <CardForecast date={date} midday={midday}/>
+              <CardForecast date={date} midday={midday} />
             </Col>
           );
         })}
@@ -222,10 +221,16 @@ const ForecastPage: React.FC = () => {
               placeholder="Nhập tên thành phố"
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              onPressEnter={() => fetchByCity(city)}
+              onPressEnter={() => {
+                fetchByCity(city);
+                setSearchParams({ "city": city });
+              }}
               style={{ width: 240 }}
             />
-            <Button type="primary" icon={<SearchOutlined />} onClick={() => fetchByCity(city)}>
+            <Button type="primary" icon={<SearchOutlined />} onClick={() => {
+              fetchByCity(city);
+              setSearchParams({ "city": city });
+            }}>
               Tìm kiếm
             </Button>
             <Button icon={<AimOutlined />} onClick={fetchByLocation}>
@@ -243,7 +248,7 @@ const ForecastPage: React.FC = () => {
               {forecastMode === 'today' ? (
                 <Tabs defaultActiveKey="1" size="large">
                   <TabPane tab={<span><FireOutlined /> Nhiệt độ</span>} key="1">
-                    {renderChart('temp', '#ff4d4f', '°C', 'Nhiệt độ')}
+                    {renderChart('temp', '#ff4d4f', `${unit === 'metric' ? '°C':'°F'}`, 'Nhiệt độ')}
                   </TabPane>
                   <TabPane tab={<span><CloudOutlined /> Độ ẩm</span>} key="2">
                     {renderChart('humidity', '#1890ff', '%', 'Độ ẩm')}

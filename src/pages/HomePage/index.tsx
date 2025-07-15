@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Input, Button, Typography, message, Row, Col, } from 'antd';
 import { AimOutlined } from '@ant-design/icons';
 import type { WeatherData } from '../../types/weather';
@@ -15,6 +15,20 @@ const HomePage: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [position, setPosition] = useState<LatLng | null>(null);
     const fetchWeather = useFetchWeather();
+    // useEffect(() => {
+    //     if (!navigator.geolocation) return;
+
+    //     navigator.geolocation.getCurrentPosition(
+    //         async (pos) => {
+    //             const latlng = new LatLng(pos.coords.latitude, pos.coords.longitude);
+    //             setPosition(latlng);
+    //         },
+    //         (err) => {
+    //             console.warn('Không lấy được vị trí:', err);
+    //             message.error('Không thể xác định vị trí hiện tại.');
+    //         }
+    //     );
+    // }, []);
 
     const fetchWeatherByCity = async (cityName: string) => {
         setLoading(true);
@@ -30,7 +44,8 @@ const HomePage: React.FC = () => {
                 icon: data.weather[0].icon,
                 city: data.name,
             });
-
+            setPosition(new LatLng(data.coord.lat, data.coord.lon));
+            message.success("Lấy dữ liệu thành công")
         } catch (error) {
             message.error('Không tìm thấy thông tin thời tiết cho thành phố này.');
         } finally {
@@ -54,7 +69,7 @@ const HomePage: React.FC = () => {
                         city: data.name,
                     });
                     setPosition(new LatLng(coords.latitude, coords.longitude));
-
+                    message.success("Lấy dữ liệu thành công")
                 } catch (error) {
                     message.error('Không thể lấy thông tin thời tiết theo vị trí.');
                 } finally {
@@ -86,14 +101,34 @@ const HomePage: React.FC = () => {
                 icon: res.weather[0].icon,
                 city: res.name,
             });
-
+            message.success("Lấy dữ liệu thành công")
         } catch (error) {
             message.error("Không thể lấy thông tin thời tiết theo vị trí.");
         } finally {
             setLoading(false);
         }
     };
+    useEffect(() => {
+        const getLocationAndFetchWeather = async () => {
+            setLoading(true);
+            try {
+                const { coords } = await new Promise<GeolocationPosition>((resolve, reject) =>
+                    navigator.geolocation.getCurrentPosition(resolve, reject)
+                );
 
+                const latlng = new LatLng(coords.latitude, coords.longitude);
+                setPosition(latlng);
+                await fetchWeatherByClickMap(latlng.lat, latlng.lng);
+            } catch (error) {
+                console.warn("Không lấy được vị trí:", error);
+                message.error("Không thể xác định vị trí hiện tại.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        getLocationAndFetchWeather();
+    }, []);
 
     return (
         <Row>

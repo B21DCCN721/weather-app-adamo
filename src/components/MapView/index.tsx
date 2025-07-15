@@ -5,13 +5,14 @@ import {
   Marker,
   Popup,
   useMapEvent,
+  useMap,
 } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L, { LatLng } from 'leaflet';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -25,6 +26,9 @@ interface MapViewProps {
   setPosition: (pos: LatLng) => void;
   fetchWeather: (lat: number, lng: number) => void;
 }
+interface MapAutoCenterProps {
+  position: LatLng;
+}
 
 const MapView: React.FC<MapViewProps> = ({ position, setPosition, fetchWeather }) => {
   const defaultCenter: [number, number] = [21.0285, 105.8542]; // fallback center
@@ -37,7 +41,15 @@ const MapView: React.FC<MapViewProps> = ({ position, setPosition, fetchWeather }
     });
     return null;
   };
+  const MapAutoCenter: React.FC<MapAutoCenterProps> = ({ position }) => {
+    const map = useMap();
 
+    useEffect(() => {
+      map.setView(position, map.getZoom(), { animate: true });
+    }, [position, map]);
+
+    return null;
+  };
   return (
     <MapContainer
       center={position ?? defaultCenter}
@@ -50,13 +62,16 @@ const MapView: React.FC<MapViewProps> = ({ position, setPosition, fetchWeather }
       />
       <ClickHandler />
       {position && (
-        <Marker position={position}>
-          <Popup>
-            <b>Vị trí:</b><br />
-            Lat: {position.lat.toFixed(5)}<br />
-            Lng: {position.lng.toFixed(5)}
-          </Popup>
-        </Marker>
+        <>
+          <Marker position={position}>
+            <Popup>
+              <b>Vị trí:</b><br />
+              Lat: {position.lat.toFixed(5)}<br />
+              Lng: {position.lng.toFixed(5)}
+            </Popup>
+          </Marker>
+          <MapAutoCenter position={position} />
+        </>
       )}
     </MapContainer>
   );
