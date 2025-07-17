@@ -1,9 +1,10 @@
-import { FieldTimeOutlined, HomeOutlined, RiseOutlined, SettingOutlined } from "@ant-design/icons";
+import { FieldTimeOutlined, HomeOutlined, RiseOutlined, RobotOutlined, SettingOutlined } from "@ant-design/icons";
 import { Button, ConfigProvider, Drawer, Layout, Menu, theme as antdTheme } from "antd"
 import { Content, Footer, Header } from "antd/es/layout/layout"
 import { Link, Outlet, useLocation } from "react-router-dom"
 import FormSetting from "../../components/FormSetting";
 import { useState } from "react";
+import ChatBotMessenger from "../../components/ChatBotMessenger";
 
 const DefaultLayout = () => {
     const location = useLocation();
@@ -11,6 +12,7 @@ const DefaultLayout = () => {
     const { token } = antdTheme.useToken();
     // drawer setting
     const [openSetting, setOpenSetting] = useState(false);
+    const [openBot, setOpenBot] = useState(false);
     const showDrawer = () => {
         setOpenSetting(true);
     };
@@ -48,14 +50,30 @@ const DefaultLayout = () => {
                             position: 'fixed',
                             right: 30,
                             bottom: 100,
-                            zIndex: 1000,
+                            zIndex: 900,
                             transition: 'transform 0.3s ease',
                             width: "40px",
                             height: "40px",
                         }}
-                        className="floating-setting-btn"
                         onClick={showDrawer}
                     />
+                    <Button
+                        type="primary"
+                        shape="circle"
+                        icon={<RobotOutlined style={{ fontSize: "20px" }} />}
+                        size="large"
+                        style={{
+                            position: 'fixed',
+                            right: 30,
+                            bottom: 50,
+                            zIndex: 900,
+                            transition: 'transform 0.3s ease',
+                            width: "40px",
+                            height: "40px",
+                        }}
+                        onClick={() => setOpenBot(true)}
+                    />
+                    <ChatBotMessenger open={openBot} setOpen={setOpenBot} onSendMessage={(mess) => console.log(mess)} />
                     <Drawer
                         title="Cài đặt"
                         closable={{ 'aria-label': 'Close Button' }}

@@ -13,8 +13,7 @@ import {
   Table,
   Typography,
   Row,
-  Col,
-  Card,
+  Col
 } from 'antd';
 import {
   DashboardOutlined,
@@ -27,7 +26,6 @@ import {
   ClockCircleOutlined,
   FireOutlined,
 } from '@ant-design/icons';
-import axios from 'axios';
 import {
   LineChart,
   Line,
