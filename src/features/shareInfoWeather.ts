@@ -16,8 +16,8 @@ export const shareWeatherSlice = createSlice({
   name: "shareWeather",
   initialState,
   reducers: {
-    addWeather: (state, action: PayloadAction<WeatherData>) => {
-      return state = action.payload
+    addWeather: (_, action: PayloadAction<WeatherData>) => {
+      return action.payload
     },
   },
 });
