@@ -7,6 +7,7 @@ import MapView from '../../components/MapView';
 import CardDetaiInfoWeather from '../../components/CardDetailWeather';
 import { LatLng } from 'leaflet';
 import useFetchWeather from '../../hooks/useFetchWeather';
+import { useSearchParams } from 'react-router-dom';
 const { Title } = Typography;
 
 const HomePage: React.FC = () => {
@@ -14,6 +15,7 @@ const HomePage: React.FC = () => {
     const [weather, setWeather] = useState<WeatherData | null>(null);
     const [loading, setLoading] = useState(false);
     const [position, setPosition] = useState<LatLng | null>(null);
+    const [, setSearchParams] = useSearchParams("");
     const fetchWeather = useFetchWeather();
     // useEffect(() => {
     //     if (!navigator.geolocation) return;
@@ -33,18 +35,21 @@ const HomePage: React.FC = () => {
     const fetchWeatherByCity = async (cityName: string) => {
         setLoading(true);
         try {
-            const data = await fetchWeather.fetchData(`q=${cityName}`);
+            const res = await fetchWeather.fetchData(`q=${cityName}`);
             setWeather({
-                temp: data.main.temp,
-                humidity: data.main.humidity,
-                pressure: data.main.pressure,
-                windSpeed: data.wind.speed,
-                windDeg: data.wind.deg,
-                description: data.weather[0].description,
-                icon: data.weather[0].icon,
-                city: data.name,
+                temp: res.main.temp,
+                humidity: res.main.humidity,
+                pressure: res.main.pressure,
+                windSpeed: res.wind.speed,
+                windDeg: res.wind.deg,
+                description: res.weather[0].description,
+                icon: res.weather[0].icon,
+                city: res.name,
             });
-            setPosition(new LatLng(data.coord.lat, data.coord.lon));
+            setPosition(new LatLng(res.coord.lat, res.coord.lon));
+            setSearchParams({
+                city: res.name
+            })
             message.success("Lấy dữ liệu thành công")
         } catch (error) {
             message.error('Không tìm thấy thông tin thời tiết cho thành phố này.');
@@ -57,18 +62,21 @@ const HomePage: React.FC = () => {
         navigator.geolocation.getCurrentPosition(
             async ({ coords }) => {
                 try {
-                    const data = await fetchWeather.fetchData(`lat=${coords.latitude}&lon=${coords.longitude}`);
+                    const res = await fetchWeather.fetchData(`lat=${coords.latitude}&lon=${coords.longitude}`);
                     setWeather({
-                        temp: data.main.temp,
-                        humidity: data.main.humidity,
-                        pressure: data.main.pressure,
-                        windSpeed: data.wind.speed,
-                        windDeg: data.wind.deg,
-                        description: data.weather[0].description,
-                        icon: data.weather[0].icon,
-                        city: data.name,
+                        temp: res.main.temp,
+                        humidity: res.main.humidity,
+                        pressure: res.main.pressure,
+                        windSpeed: res.wind.speed,
+                        windDeg: res.wind.deg,
+                        description: res.weather[0].description,
+                        icon: res.weather[0].icon,
+                        city: res.name,
                     });
                     setPosition(new LatLng(coords.latitude, coords.longitude));
+                    setSearchParams({
+                        city: res.name
+                    })
                     message.success("Lấy dữ liệu thành công")
                 } catch (error) {
                     message.error('Không thể lấy thông tin thời tiết theo vị trí.');
@@ -101,6 +109,9 @@ const HomePage: React.FC = () => {
                 icon: res.weather[0].icon,
                 city: res.name,
             });
+            setSearchParams({
+                city: res.name
+            })
             message.success("Lấy dữ liệu thành công")
         } catch (error) {
             message.error("Không thể lấy thông tin thời tiết theo vị trí.");

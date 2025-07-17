@@ -86,6 +86,7 @@ const ForecastPage: React.FC = () => {
       setFullData(all);
       setData(applyFilter(all));
       setLocationName(res.city.name || res.name);
+      setSearchParams({ "city": cityName });
       message.success("Lấy dữ liệu thành công")
     } catch (err) {
       message.error('Không thể lấy dữ liệu dự báo cho thành phố đã nhập.');
@@ -110,6 +111,10 @@ const ForecastPage: React.FC = () => {
           setFullData(all);
           setData(applyFilter(all));
           setLocationName(res.city.name || res.name);
+          setSearchParams({
+                lat: String(latitude),
+                lng: String(longitude)
+            })
           message.success("Lấy dữ liệu thành công")
         } catch (err) {
           message.error('Không thể lấy dữ liệu thời tiết từ vị trí.');
@@ -223,13 +228,11 @@ const ForecastPage: React.FC = () => {
               onChange={(e) => setCity(e.target.value)}
               onPressEnter={() => {
                 fetchByCity(city);
-                setSearchParams({ "city": city });
               }}
               style={{ width: 240 }}
             />
             <Button type="primary" icon={<SearchOutlined />} onClick={() => {
               fetchByCity(city);
-              setSearchParams({ "city": city });
             }}>
               Tìm kiếm
             </Button>
