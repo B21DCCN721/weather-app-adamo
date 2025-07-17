@@ -1,8 +1,12 @@
 // ChatBotMessenger.tsx
 import React, { useEffect, useRef, useState } from 'react';
-import { Avatar, Input, Button, List, Typography, Space, Flex, Divider } from 'antd';
+import { Avatar, Input, Button, List, Typography, Space, Flex, Divider, Card } from 'antd';
 import { SendOutlined, RobotOutlined, UserOutlined, CloseOutlined } from '@ant-design/icons';
 import type { InputRef } from 'antd';
+import aiGemini from '../../services/geminiGoogle';
+import { useSelector } from 'react-redux';
+import type { RootState } from '../../store';
+import type { WeatherData } from '../../types/weather';
 
 const { Text } = Typography;
 
@@ -15,10 +19,9 @@ type Message = {
 interface ChatBotMessengerProps {
   open: boolean,
   setOpen: (value: boolean) => void,
-  onSendMessage: (message: string) => void,
 }
 
-const ChatBotMessenger: React.FC<ChatBotMessengerProps> = ({ open, setOpen, onSendMessage }) => {
+const ChatBotMessenger: React.FC<ChatBotMessengerProps> = ({ open, setOpen, }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
@@ -30,8 +33,8 @@ const ChatBotMessenger: React.FC<ChatBotMessengerProps> = ({ open, setOpen, onSe
   const [input, setInput] = useState('');
   const messageEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<InputRef>(null);
-
-  const handleSend = () => {
+  const weatherData: WeatherData = useSelector((state: RootState) => state.shareWeather);
+  const handleSend = async () => {
     if (!input.trim()) return;
 
     const userMsg: Message = {
@@ -43,18 +46,54 @@ const ChatBotMessenger: React.FC<ChatBotMessengerProps> = ({ open, setOpen, onSe
 
     setMessages((prev) => [...prev, userMsg]);
     setInput('');
-    onSendMessage(userMsg.content)
-    // Giả lập phản hồi của bot
-    setTimeout(() => {
+
+    try {
+      let reply: string;
+
+      // Nội dung liên quan thời tiết
+      if (input.toLowerCase().includes('thời tiết')) {
+        const weatherContext = `
+        Nhiệt độ: ${weatherData.temp}
+        Độ ẩm: ${weatherData.humidity}
+        Áp suất: ${weatherData.pressure}
+        Mô tả: ${weatherData.description}
+        Tốc độ gió: ${weatherData.windSpeed}
+        Hướng gió: ${weatherData.windDeg}
+        Địa điểm: ${weatherData.city}
+      `;
+        const prompt = `
+        Dựa trên thông tin thời tiết sau, hãy trả lời câu hỏi của người dùng:
+        Câu hỏi: "${input}"
+        Thời tiết hôm nay: 
+        ${weatherContext}
+      `;
+        reply = await aiGemini(prompt);
+      } else {
+        // Câu hỏi bình thường
+        reply = await aiGemini(input);
+      }
+
       const botMsg: Message = {
         id: Date.now() + 1,
         sender: 'bot',
-        content: `Bot: Bạn vừa nói "${userMsg.content}" phải không? 😊`,
+        content: reply,
         timestamp: new Date().toLocaleTimeString(),
       };
+
       setMessages((prev) => [...prev, botMsg]);
-    }, 1000);
+    } catch (error) {
+      const errMsg: Message = {
+        id: Date.now() + 1,
+        sender: 'bot',
+        content: 'Đã có lỗi xảy ra khi lấy thông tin thời tiết.',
+        timestamp: new Date().toLocaleTimeString(),
+      };
+      setMessages((prev) => [...prev, errMsg]);
+      console.log(error);
+
+    }
   };
+
 
   const scrollToBottom = () => {
     messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -70,12 +109,12 @@ const ChatBotMessenger: React.FC<ChatBotMessengerProps> = ({ open, setOpen, onSe
   }, [open]);
 
   return (
-    <div
+    <Card
       style={{
         width: 380,
         margin: '0 auto',
         height: '90vh',
-        display: `${open ? 'flex' : 'none'}`,
+        display: `${open ? 'block' : 'none'}`,
         flexDirection: 'column',
         border: '1px solid #ddd',
         borderRadius: 8,
@@ -84,7 +123,14 @@ const ChatBotMessenger: React.FC<ChatBotMessengerProps> = ({ open, setOpen, onSe
         right: 30,
         bottom: 50,
         zIndex: 1000,
-        background: '#fff'
+      }}
+      styles={{
+        body: {
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          padding: 8
+        }
       }}
     >
       {/* Header */}
@@ -131,7 +177,7 @@ const ChatBotMessenger: React.FC<ChatBotMessengerProps> = ({ open, setOpen, onSe
       </div>
 
       {/* Input */}
-      <div style={{ padding: 16, borderTop: '1px solid #ddd', background: '#fff' }}>
+      <div style={{ padding: 16, borderTop: '1px solid #ddd', }}>
         <Space.Compact style={{ width: '100%' }}>
           <Input
             placeholder="Nhập tin nhắn..."
@@ -143,7 +189,7 @@ const ChatBotMessenger: React.FC<ChatBotMessengerProps> = ({ open, setOpen, onSe
           <Button type="primary" icon={<SendOutlined />} onClick={handleSend} />
         </Space.Compact>
       </div>
-    </div>
+    </Card>
   );
 };
 

@@ -8,6 +8,9 @@ import CardDetaiInfoWeather from '../../components/CardDetailWeather';
 import { LatLng } from 'leaflet';
 import useFetchWeather from '../../hooks/useFetchWeather';
 import { useSearchParams } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { addWeather } from '../../features/shareInfoWeather';
+import type { AppDispatch } from '../../store';
 const { Title } = Typography;
 
 const HomePage: React.FC = () => {
@@ -16,21 +19,8 @@ const HomePage: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [position, setPosition] = useState<LatLng | null>(null);
     const [, setSearchParams] = useSearchParams("");
+    const dispatch = useDispatch<AppDispatch>();
     const fetchWeather = useFetchWeather();
-    // useEffect(() => {
-    //     if (!navigator.geolocation) return;
-
-    //     navigator.geolocation.getCurrentPosition(
-    //         async (pos) => {
-    //             const latlng = new LatLng(pos.coords.latitude, pos.coords.longitude);
-    //             setPosition(latlng);
-    //         },
-    //         (err) => {
-    //             console.warn('Không lấy được vị trí:', err);
-    //             message.error('Không thể xác định vị trí hiện tại.');
-    //         }
-    //     );
-    // }, []);
 
     const fetchWeatherByCity = async (cityName: string) => {
         setLoading(true);
@@ -46,6 +36,16 @@ const HomePage: React.FC = () => {
                 icon: res.weather[0].icon,
                 city: res.name,
             });
+            dispatch(addWeather({
+                temp: res.main.temp,
+                humidity: res.main.humidity,
+                pressure: res.main.pressure,
+                windSpeed: res.wind.speed,
+                windDeg: res.wind.deg,
+                description: res.weather[0].description,
+                icon: res.weather[0].icon,
+                city: res.name,
+            }))
             setPosition(new LatLng(res.coord.lat, res.coord.lon));
             setSearchParams({
                 city: res.name
@@ -73,6 +73,16 @@ const HomePage: React.FC = () => {
                         icon: res.weather[0].icon,
                         city: res.name,
                     });
+                    dispatch(addWeather({
+                        temp: res.main.temp,
+                        humidity: res.main.humidity,
+                        pressure: res.main.pressure,
+                        windSpeed: res.wind.speed,
+                        windDeg: res.wind.deg,
+                        description: res.weather[0].description,
+                        icon: res.weather[0].icon,
+                        city: res.name,
+                    }))
                     setPosition(new LatLng(coords.latitude, coords.longitude));
                     setSearchParams({
                         city: res.name
@@ -109,6 +119,16 @@ const HomePage: React.FC = () => {
                 icon: res.weather[0].icon,
                 city: res.name,
             });
+            dispatch(addWeather({
+                temp: res.main.temp,
+                humidity: res.main.humidity,
+                pressure: res.main.pressure,
+                windSpeed: res.wind.speed,
+                windDeg: res.wind.deg,
+                description: res.weather[0].description,
+                icon: res.weather[0].icon,
+                city: res.name,
+            }))
             setSearchParams({
                 city: res.name
             })
@@ -126,7 +146,6 @@ const HomePage: React.FC = () => {
                 const { coords } = await new Promise<GeolocationPosition>((resolve, reject) =>
                     navigator.geolocation.getCurrentPosition(resolve, reject)
                 );
-
                 const latlng = new LatLng(coords.latitude, coords.longitude);
                 setPosition(latlng);
                 await fetchWeatherByClickMap(latlng.lat, latlng.lng);
@@ -170,7 +189,6 @@ const HomePage: React.FC = () => {
                     setPosition={setPosition}
                     fetchWeather={fetchWeatherByClickMap}
                 />
-
             </Col>
 
         </Row>

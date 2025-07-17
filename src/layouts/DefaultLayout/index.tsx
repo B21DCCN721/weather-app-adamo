@@ -73,7 +73,7 @@ const DefaultLayout = () => {
                         }}
                         onClick={() => setOpenBot(true)}
                     />
-                    <ChatBotMessenger open={openBot} setOpen={setOpenBot} onSendMessage={(mess) => console.log(mess)} />
+                    <ChatBotMessenger open={openBot} setOpen={setOpenBot} />
                     <Drawer
                         title="Cài đặt"
                         closable={{ 'aria-label': 'Close Button' }}
