@@ -11,6 +11,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { addWeather } from '../../features/shareInfoWeather';
 import type { AppDispatch } from '../../store';
+import { useTranslation } from 'react-i18next';
 const { Title } = Typography;
 
 const HomePage: React.FC = () => {
@@ -21,6 +22,7 @@ const HomePage: React.FC = () => {
     const [, setSearchParams] = useSearchParams("");
     const dispatch = useDispatch<AppDispatch>();
     const fetchWeather = useFetchWeather();
+    const { t } = useTranslation(['home', 'message']);
 
     const fetchWeatherByCity = async (cityName: string) => {
         setLoading(true);
@@ -50,9 +52,9 @@ const HomePage: React.FC = () => {
             setSearchParams({
                 city: res.name
             })
-            message.success("Lấy dữ liệu thành công")
+            message.success(`${t('message:success')}`);
         } catch (error) {
-            message.error('Không tìm thấy thông tin thời tiết cho thành phố này.');
+            message.error(`${t('message:error')}`);
         } finally {
             setLoading(false);
         }
@@ -87,9 +89,9 @@ const HomePage: React.FC = () => {
                     setSearchParams({
                         city: res.name
                     })
-                    message.success("Lấy dữ liệu thành công")
+                    message.success(`${t('message:success')}`);
                 } catch (error) {
-                    message.error('Không thể lấy thông tin thời tiết theo vị trí.');
+                    message.success(`${t('message:success')}`);
                 } finally {
                     setLoading(false);
                 }
@@ -132,9 +134,9 @@ const HomePage: React.FC = () => {
             setSearchParams({
                 city: res.name
             })
-            message.success("Lấy dữ liệu thành công")
+            message.success(`${t('message:success')}`);
         } catch (error) {
-            message.error("Không thể lấy thông tin thời tiết theo vị trí.");
+            message.success(`${t('message:error')}`);
         } finally {
             setLoading(false);
         }
@@ -151,7 +153,7 @@ const HomePage: React.FC = () => {
                 await fetchWeatherByClickMap(latlng.lat, latlng.lng);
             } catch (error) {
                 console.warn("Không lấy được vị trí:", error);
-                message.error("Không thể xác định vị trí hiện tại.");
+                message.error(`${t('error.notFound')}`);
             } finally {
                 setLoading(false);
             }
@@ -164,18 +166,18 @@ const HomePage: React.FC = () => {
         <Row>
             <Col span={12}>
                 <div style={{ maxWidth: 600, margin: '0 auto' }}>
-                    <Title level={3}>Tra cứu thời tiết</Title>
+                    <Title level={3}>{t('home:titleSearch')}</Title>
                     <Input.Search
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
                         onSearch={fetchWeatherByCity}
-                        placeholder="Nhập tên thành phố (VD: hà nội)"
+                        placeholder={t('home:placeholderSearch')}
                         loading={loading}
-                        enterButton="Tìm"
+                        enterButton={t('home:searchButton')}
                         style={{ marginBottom: 16 }}
                     />
                     <Button icon={<AimOutlined />} onClick={fetchWeatherByLocation} loading={loading} style={{ marginBottom: 24 }}>
-                        Sử dụng vị trí hiện tại
+                        {t('home:positionButton')}
                     </Button>
 
                     {weather && (

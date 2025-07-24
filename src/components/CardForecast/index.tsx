@@ -1,5 +1,6 @@
 import { FireOutlined, CloudOutlined, CompassOutlined, DashboardOutlined, LoadingOutlined } from "@ant-design/icons"
 import { Card, Col, Row } from "antd"
+import { useTranslation } from "react-i18next";
 interface CardForecastProps {
   date: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -7,9 +8,11 @@ interface CardForecastProps {
 }
 const CardForecast: React.FC<CardForecastProps> = ({ date, midday }) => {
   const unit = localStorage.getItem('unit') ?? 'metric';
+  const language = localStorage.getItem('language') ?? 'vi'
+  const { t } = useTranslation('forecast');
   return (
     <Card
-      title={`📅 ${new Date(date).toLocaleDateString('vi-VN', {
+      title={`📅 ${new Date(date).toLocaleDateString(`${language === 'vi' ? 'vi-VN' : 'en-EN'}`, {
         weekday: 'long',
         day: '2-digit',
         month: '2-digit',
@@ -23,17 +26,17 @@ const CardForecast: React.FC<CardForecastProps> = ({ date, midday }) => {
         </Col>
 
         <Col span={12}>
-          <CloudOutlined /> Độ ẩm: {midday.humidity} %
+          <CloudOutlined /> {t('cardForecast.humidity')}: {midday.humidity} %
         </Col>
         <Col span={12}>
-          <CompassOutlined /> Hướng gió: {midday.windDeg}°
+          <CompassOutlined /> {t('cardForecast.windDeg')}: {midday.windDeg}°
         </Col>
 
         <Col span={12}>
-          <DashboardOutlined /> Áp suất: {midday.pressure} hPa
+          <DashboardOutlined /> {t('cardForecast.pressure')}: {midday.pressure} hPa
         </Col>
         <Col span={12}>
-          <LoadingOutlined /> Tốc độ gió: {midday.windSpeed} m/s
+          <LoadingOutlined /> {t('cardForecast.windSpeed')}: {midday.windSpeed} m/s
         </Col>
       </Row>
     </Card>

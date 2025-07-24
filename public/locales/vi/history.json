@@ -1,0 +1,13 @@
+{
+    "titlePage": "Lịch sử thời tiết",
+    "placeholderDatePicker": "Chọn ngày",
+    "titleTable": {
+        "time": "Thời gian",
+        "temp": "Nhiệt độ",
+        "humidity": "Độ ẩm",
+        "pressure": "Áp suất",
+        "windSpeed": "Tốc độ gió",
+        "windDeg": "Hướng gió",
+        "description": "Chi tiết"
+    }
+}

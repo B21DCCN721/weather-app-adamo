@@ -1,0 +1,22 @@
+{
+  "siderBar": {
+    "currentDay": "Dự báo hôm nay",
+    "fiveNextDays": "Dự báo 5 ngày tới"
+  },
+  "searchButton": "Tìm kiếm",
+  "positionButton": "Dùng vị trí hiện tại",
+  "currentWeather": "Thời tiết tại",
+  "cardForecast": {
+    "humidity": "Độ ẩm",
+    "pressure": "Áp suất",
+    "windSpeed": "Tốc độ gió",
+    "windDeg": "Hướng gió"
+  },
+  "tabCondition": {
+    "temp": "Nhiệt độ",
+    "humidity": "Độ ẩm",
+    "pressure": "Áp suất",
+    "windSpeed": "Tốc độ gió",
+    "windDeg": "Hướng gió"
+  }
+}

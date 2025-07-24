@@ -7,6 +7,7 @@ import aiGemini from '../../services/geminiGoogle';
 import { useSelector } from 'react-redux';
 import type { RootState } from '../../store';
 import type { WeatherData } from '../../types/weather';
+import { useTranslation } from 'react-i18next';
 
 const { Text } = Typography;
 
@@ -22,11 +23,12 @@ interface ChatBotMessengerProps {
 }
 
 const ChatBotMessenger: React.FC<ChatBotMessengerProps> = ({ open, setOpen, }) => {
+  const { t } = useTranslation(['chatbot', 'message']);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
       sender: 'bot',
-      content: 'Xin chào! Tôi có thể giúp gì cho bạn hôm nay?',
+      content: `${t('chatbot:initialMessage')}`,
       timestamp: new Date().toLocaleTimeString(),
     },
   ]);
@@ -85,7 +87,7 @@ const ChatBotMessenger: React.FC<ChatBotMessengerProps> = ({ open, setOpen, }) =
       const errMsg: Message = {
         id: Date.now() + 1,
         sender: 'bot',
-        content: 'Đã có lỗi xảy ra khi lấy thông tin thời tiết.',
+        content: `${t('message:error')}`,
         timestamp: new Date().toLocaleTimeString(),
       };
       setMessages((prev) => [...prev, errMsg]);
@@ -180,7 +182,7 @@ const ChatBotMessenger: React.FC<ChatBotMessengerProps> = ({ open, setOpen, }) =
       <div style={{ padding: 16, borderTop: '1px solid #ddd', }}>
         <Space.Compact style={{ width: '100%' }}>
           <Input
-            placeholder="Nhập tin nhắn..."
+            placeholder={t('chatbot:placeHolderInput')}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onPressEnter={handleSend}

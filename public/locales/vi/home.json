@@ -1,0 +1,21 @@
+{
+  "titleSearch": "Tra cứu thời tiết",
+  "placeholderSearch": "Nhập tên thành phố (ví dụ: Hà Nội)",
+  "searchButton": "Tìm kiếm",
+  "positionButton": "Dùng vị trí hiện tại",
+  "currentWeather": "Thời tiết tại",
+  "state": "Tình trạng thời tiết",
+  "cardDetail": {
+    "temp": "Nhiệt độ",
+    "humidity": "Độ ẩm",
+    "pressure": "Áp suất",
+    "windSpeed": "Tốc độ gió",
+    "windDeg": "Hướng gió",
+    "description": "Chi tiết"
+  },
+  "error": {
+    "notFound": "Không tìm thấy thành phố",
+    "serverError": "Lỗi máy chủ, vui lòng thử lại sau"
+  },
+  "noti": "Thông báo"
+}

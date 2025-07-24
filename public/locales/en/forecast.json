@@ -1,0 +1,22 @@
+{
+  "siderBar": {
+    "currentDay": "Forecast today",
+    "fiveNextDays": "Forecast 5 days later"
+  },
+  "searchButton": "Search",
+  "positionButton": "Use current position",
+  "currentWeather": "Weather in",
+  "cardForecast": {
+    "humidity": "Humidity",
+    "pressure": "Pressure",
+    "windSpeed": "Wind Speed",
+    "windDeg": "Wind Deg"
+  },
+  "tabCondition": {
+    "temp": "Temperature",
+    "humidity": "Humidity",
+    "pressure": "Pressure",
+    "windSpeed": "Wind Speed",
+    "windDeg": "Wind Deg"
+  }
+}

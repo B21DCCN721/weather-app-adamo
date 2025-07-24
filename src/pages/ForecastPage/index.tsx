@@ -1,44 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from 'react';
-import {
-  Layout,
-  Menu,
-  Tabs,
-  Spin,
-  message,
-  Input,
-  Space,
-  Button,
-  Table,
-  Typography,
-  Row,
-  Col
-} from 'antd';
-import {
-  DashboardOutlined,
-  CloudOutlined,
-  CompassOutlined,
-  LoadingOutlined,
-  AimOutlined,
-  SearchOutlined,
-  CalendarOutlined,
-  ClockCircleOutlined,
-  FireOutlined,
-} from '@ant-design/icons';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from 'recharts';
+import { Layout, Menu, Tabs, Spin, message, Input, Space, Button, Table, Typography, Row, Col } from 'antd';
+import { DashboardOutlined, CloudOutlined, CompassOutlined, LoadingOutlined, AimOutlined,
+  SearchOutlined, CalendarOutlined, ClockCircleOutlined, FireOutlined, }
+   from '@ant-design/icons';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, } from 'recharts';
 import type { ForecastItem } from '../../types/forecast';
 import CardForecast from '../../components/CardForecast';
 import { useSearchParams } from 'react-router-dom';
 import useFetchWeatherForecast from '../../hooks/useFetchWeatherForecast';
+import { useTranslation } from 'react-i18next';
 
 const { TabPane } = Tabs;
 const { Sider, Content } = Layout;
@@ -52,7 +24,9 @@ const ForecastPage: React.FC = () => {
   const [locationName, setLocationName] = useState<string>('');
   const [, setSearchParams] = useSearchParams("");
   const fetchForecast = useFetchWeatherForecast();
-  const unit = localStorage.getItem('unit')??'metric';
+  const unit = localStorage.getItem('unit') ?? 'metric';
+  const language = localStorage.getItem('language') ?? 'vi'
+  const { t } = useTranslation(['forecast', 'message']);
 
   const processData = (rawList: any[]): ForecastItem[] => {
     return rawList.map((item: any) => ({
@@ -85,9 +59,9 @@ const ForecastPage: React.FC = () => {
       setData(applyFilter(all));
       setLocationName(res.city.name || res.name);
       setSearchParams({ "city": cityName });
-      message.success("Lấy dữ liệu thành công")
+      message.success(`${t('message:success')}`);
     } catch (err) {
-      message.error('Không thể lấy dữ liệu dự báo cho thành phố đã nhập.');
+      message.error(`${t('message:error')}`);
     } finally {
       setLoading(false);
     }
@@ -110,12 +84,12 @@ const ForecastPage: React.FC = () => {
           setData(applyFilter(all));
           setLocationName(res.city.name || res.name);
           setSearchParams({
-                lat: String(latitude),
-                lng: String(longitude)
-            })
-          message.success("Lấy dữ liệu thành công")
+            lat: String(latitude),
+            lng: String(longitude)
+          })
+          message.success(`${t('message:success')}`);
         } catch (err) {
-          message.error('Không thể lấy dữ liệu thời tiết từ vị trí.');
+          message.error(`${t('message:error')}`);
         } finally {
           setLoading(false);
         }
@@ -143,7 +117,7 @@ const ForecastPage: React.FC = () => {
   ) => {
     const columns = [
       {
-        title: 'Thời gian',
+        title: `${language === 'vi' ? 'Thời gian' : 'Time'}`,
         dataIndex: 'time',
         key: 'time',
       },
@@ -210,10 +184,10 @@ const ForecastPage: React.FC = () => {
           selectedKeys={[forecastMode]}
         >
           <Menu.Item key="today" icon={<ClockCircleOutlined />}>
-            Dự báo hôm nay
+            {t('forecast:siderBar.currentDay')}
           </Menu.Item>
           <Menu.Item key="5days" icon={<CalendarOutlined />}>
-            Dự báo 5 ngày tới
+            {t('forecast:siderBar.fiveNextDays')}
           </Menu.Item>
         </Menu>
       </Sider>
@@ -224,6 +198,7 @@ const ForecastPage: React.FC = () => {
               placeholder="Nhập tên thành phố"
               value={city}
               onChange={(e) => setCity(e.target.value)}
+
               onPressEnter={() => {
                 fetchByCity(city);
               }}
@@ -232,14 +207,14 @@ const ForecastPage: React.FC = () => {
             <Button type="primary" icon={<SearchOutlined />} onClick={() => {
               fetchByCity(city);
             }}>
-              Tìm kiếm
+              {t('forecast:searchButton')}
             </Button>
             <Button icon={<AimOutlined />} onClick={fetchByLocation}>
-              Vị trí hiện tại
+              {t('forecast:positionButton')}
             </Button>
           </Space>
           <Typography.Title level={4}>
-            Thời tiết tại: {locationName || 'Không rõ'}
+            {t('forecast:currentWeather')} {locationName || 'Không rõ'}
           </Typography.Title>
 
           {loading ? (
@@ -248,20 +223,20 @@ const ForecastPage: React.FC = () => {
             <>
               {forecastMode === 'today' ? (
                 <Tabs defaultActiveKey="1" size="large">
-                  <TabPane tab={<span><FireOutlined /> Nhiệt độ</span>} key="1">
-                    {renderChart('temp', '#ff4d4f', `${unit === 'metric' ? '°C':'°F'}`, 'Nhiệt độ')}
+                  <TabPane tab={<span><FireOutlined /> {t('forecast:tabCondition.temp')}</span>} key="1">
+                    {renderChart('temp', '#ff4d4f', `${unit === 'metric' ? '°C' : '°F'}`, `${t('forecast:tabCondition.temp')}`)}
                   </TabPane>
-                  <TabPane tab={<span><CloudOutlined /> Độ ẩm</span>} key="2">
-                    {renderChart('humidity', '#1890ff', '%', 'Độ ẩm')}
+                  <TabPane tab={<span><CloudOutlined /> {t('forecast:tabCondition.humidity')}</span>} key="2">
+                    {renderChart('humidity', '#1890ff', '%', `${t('forecast:tabCondition.humidity')}`)}
                   </TabPane>
-                  <TabPane tab={<span><DashboardOutlined /> Áp suất</span>} key="3">
-                    {renderChart('pressure', '#722ed1', 'hPa', 'Áp suất')}
+                  <TabPane tab={<span><DashboardOutlined /> {t('forecast:tabCondition.pressure')}</span>} key="3">
+                    {renderChart('pressure', '#722ed1', 'hPa', `${t('forecast:tabCondition.pressure')}`)}
                   </TabPane>
-                  <TabPane tab={<span><LoadingOutlined /> Tốc độ gió</span>} key="4">
-                    {renderChart('windSpeed', '#fa8c16', 'm/s', 'Tốc độ gió')}
+                  <TabPane tab={<span><LoadingOutlined /> {t('forecast:tabCondition.windSpeed')}</span>} key="4">
+                    {renderChart('windSpeed', '#fa8c16', 'm/s', `${t('forecast:tabCondition.windSpeed')}`)}
                   </TabPane>
-                  <TabPane tab={<span><CompassOutlined /> Hướng gió</span>} key="5">
-                    {renderChart('windDeg', '#13c2c2', '°', 'Hướng gió')}
+                  <TabPane tab={<span><CompassOutlined /> {t('forecast:tabCondition.windDeg')}</span>} key="5">
+                    {renderChart('windDeg', '#13c2c2', '°', `${t('forecast:tabCondition.windDeg')}`)}
                   </TabPane>
                 </Tabs>
               ) : (

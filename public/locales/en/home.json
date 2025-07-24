@@ -1,0 +1,21 @@
+{
+  "titleSearch": "Seacrh Weather",
+  "placeholderSearch": "Enter city name (e.g. London)",
+  "searchButton": "Search",
+  "positionButton": "Use current position",
+  "currentWeather": "Current Weather in",
+  "state": "Weather condition",
+  "cardDetail": {
+    "temp": "Temperature",
+    "humidity": "Humidity",
+    "pressure": "Pressure",
+    "windSpeed": "Wind Speed",
+    "windDeg": "Wind Deg",
+    "description": "Description"
+  },
+  "error": {
+    "notFound": "City not found",
+    "serverError": "Server error, please try again later"
+  },
+  "noti": "Notification"
+}

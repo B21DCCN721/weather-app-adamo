@@ -1,16 +1,16 @@
-// src/pages/WeatherHistoryPage.tsx
 import React, { useEffect, useState } from 'react';
 import { Table, Typography, Select, DatePicker, Space, Tag, Card, message, } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import dayjs, { Dayjs } from 'dayjs';
 import axios from 'axios';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const { Title } = Typography;
 const { Option } = Select;
 
 interface HistoricalWeather {
-  datetime: string; // ISO format
+  datetime: string;
   temp: number;
   humidity: number;
   pressure: number;
@@ -26,16 +26,17 @@ const WeatherHistoryPage: React.FC = () => {
   const [data, setData] = useState<HistoricalWeather[]>([]);
   const [, setSearchParams] = useSearchParams("");
   const unit = localStorage.getItem('unit') ?? 'metric';
+  const { t } = useTranslation(['history', 'message']);
   useEffect(() => {
     const getData = async () => {
       try {
         const res = await axios.get('https://final-6e524-default-rtdb.asia-southeast1.firebasedatabase.app/weatherHistory.json');
         if (res.status === 200) {
           setData(Object.values(res.data));
-          message.success("Lấy dữ liệu thành công")
+          message.success(`${t('message:success')}`);
         }
       } catch (error) {
-        message.error("Không thể lấy dữ liệu lịch sử")
+        message.success(`${t('message:error')}`);
         console.log(error);
       }
     }
@@ -49,36 +50,36 @@ const WeatherHistoryPage: React.FC = () => {
 
   const columns: ColumnsType<HistoricalWeather> = [
     {
-      title: 'Thời gian',
+      title: `${t('titleTable.time')}`,
       dataIndex: 'datetime',
       render: (val) => dayjs(val).format('HH:mm DD/MM/YYYY'),
     },
     {
-      title: `Nhiệt độ ${unit === 'metric' ? '(°C)' : '(°F)'}`,
+      title: `${t('titleTable.temp')} ${unit === 'metric' ? '(°C)' : '(°F)'}`,
       dataIndex: 'temp',
       render: (val) => <Tag color="red">{val}{`${unit === 'metric' ? '°C' : '°F'}`}</Tag>,
     },
     {
-      title: 'Độ ẩm (%)',
+      title: `${t('titleTable.humidity')} (%)`,
       dataIndex: 'humidity',
     },
     {
-      title: 'Áp suất (hPa)',
+      title: `${t('titleTable.pressure')} (hPa)`,
       dataIndex: 'pressure',
     },
     {
-      title: 'Gió',
+      title: `${t('titleTable.windSpeed')} (m/s)`,
       render: (record) => `${record.windSpeed} m/s - ${record.windDeg}°`,
     },
     {
-      title: 'Mô tả',
+      title: `${t('titleTable.description')}`,
       dataIndex: 'description',
     },
   ];
 
   return (
     <Card>
-      <Title level={3}>Lịch sử thời tiết</Title>
+      <Title level={3}>{t('titlePage')}</Title>
       <Space style={{ marginBottom: 16 }} size="large">
         <Select value={selectedCity} onChange={(value) => {
           setSelectedCity(value); setSearchParams(prev => {
@@ -111,7 +112,7 @@ const WeatherHistoryPage: React.FC = () => {
             // return current > today || current < fiveDaysAgo;
             return current > today
           }}
-          placeholder="Chọn ngày"
+          placeholder={`${t('placeholderDatePicker')}`}
           format="DD/MM/YYYY"
         />
       </Space>

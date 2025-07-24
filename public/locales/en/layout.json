@@ -1,0 +1,9 @@
+{
+    "default": {
+        "home": "Home",
+        "forecast": "Forecast",
+        "history": "History",
+        "settingTooltip": "Setting",
+        "chatbotTooltip": "Chatbot"
+    }
+}

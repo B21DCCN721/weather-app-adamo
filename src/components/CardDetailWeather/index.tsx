@@ -1,25 +1,27 @@
 import { Alert, Card, Descriptions } from "antd"
 import type { WeatherData } from "../../types/weather";
+import { useTranslation } from "react-i18next";
 interface CardDetaiInfoWeatherProps {
     weather: WeatherData;
 }
 const CardDetaiInfoWeather: React.FC<CardDetaiInfoWeatherProps> = ({ weather }) => {
     const unit = localStorage.getItem('unit') ?? 'metric';
+    const { t } = useTranslation('home');
     return (
-        <Card title={`Thời tiết tại ${weather.city}`}>
-            <Descriptions title='Tình Trạng'>
-                <Descriptions.Item label="Nhiệt độ">{weather.temp} {unit === 'metric' ? '°C' : '°F'}</Descriptions.Item>
-                <Descriptions.Item label="Độ ẩm">{weather.humidity}%</Descriptions.Item>
-                <Descriptions.Item label="Áp suất">{weather.pressure} hPa</Descriptions.Item>
-                <Descriptions.Item label="Tốc độ gió">{weather.windSpeed} m/s</Descriptions.Item>
-                <Descriptions.Item label="Hướng gió">{weather.windDeg}°</Descriptions.Item>
-                <Descriptions.Item label="Tình trạng">
+        <Card title={`${t('currentWeather')} ${weather.city}`}>
+            <Descriptions title={`${t('state')}`}>
+                <Descriptions.Item label={`${t('cardDetail.temp')}`}>{weather.temp} {unit === 'metric' ? '°C' : '°F'}</Descriptions.Item>
+                <Descriptions.Item label={`${t('cardDetail.humidity')}`}>{weather.humidity}%</Descriptions.Item>
+                <Descriptions.Item label={`${t('cardDetail.pressure')}`}>{weather.pressure} hPa</Descriptions.Item>
+                <Descriptions.Item label={`${t('cardDetail.windSpeed')}`}>{weather.windSpeed} m/s</Descriptions.Item>
+                <Descriptions.Item label={`${t('cardDetail.windDeg')}`}>{weather.windDeg}°</Descriptions.Item>
+                <Descriptions.Item label={`${t('cardDetail.description')}`}>
                     {weather.description}
                     {/* <Image src={`https://openweathermap.org/img/wn/${weather.icon}@2x.png`} alt="icon" width={40} preview={false} /> */}
                 </Descriptions.Item>
             </Descriptions>
             <Alert
-                message="Cảnh báo"
+                message={`${t('noti')}`}
                 description="Thời tiết khắc nghiệt cần bla bla..."
                 type="warning"
                 showIcon

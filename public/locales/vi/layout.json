@@ -1,0 +1,9 @@
+{
+    "default": {
+        "home": "Trang chủ",
+        "forecast": "Dự báo",
+        "history": "Lịch sử",
+        "settingTooltip": "Cài đặt",
+        "chatbotTooltip": "Trợ lý ảo"
+    }
+}

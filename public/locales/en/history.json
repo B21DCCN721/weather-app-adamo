@@ -1,0 +1,13 @@
+{
+    "titlePage": "Weather History",
+    "placeholderDatePicker": "Select date",
+    "titleTable": {
+        "time": "Time",
+        "temp": "Temperature",
+        "humidity": "Humidity",
+        "pressure": "Pressure",
+        "windSpeed": "Wind Speed",
+        "windDeg": "Wind Deg",
+        "description": "Description"
+    }
+}
